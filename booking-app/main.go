@@ -9,7 +9,7 @@ package main
 import (
 	"booking-app/helper"
 	"fmt"
-	"strings"
+	"strconv"
 )
 
 // Package level variables
@@ -24,7 +24,7 @@ var remainingTickets uint = 50
 // Exemplo de lista: var bookings = [50]string{}
 // var bookings [50]string //outra maneira de declarar lista
 // var bookings []string // Isto é um Slice, representa a mesma forma da lista porém de maneira dinâmica
-var bookings = []string{} // Criando com a sintaxe compacta
+var bookings = make([]map[string]string, 0) // Criando com a sintaxe compacta
 
 func main() {
 	greetUsers()
@@ -101,8 +101,7 @@ func getFirstNames() []string { // Colocamos dentro dos colchetes os parametros 
 	// Definindo for para iterar o slice Bookings, com a função range conseguimos o index e o valor de cada elemento
 	// Tanto para listas ou slices
 	for _, booking := range bookings {
-		var names = strings.Fields(booking)
-		firstNames = append(firstNames, names[0])
+		firstNames = append(firstNames, booking["firstName"])
 	}
 	return firstNames
 }
@@ -135,7 +134,17 @@ func bookTicket(userTickets uint, firstName string, lastName string, email strin
 	// Em GO para utilizar lista é necessário definir quandos itens poderám ser armazenados nesta lista
 	// E é necessario dizer qual o tipo de dado que terá na lista, ou seja não é possivel utilizar INT e STRING juntos.
 	// bookings[0] = firstName + " " + lastName  -> Exemplo de inserção em 1 lista
-	bookings = append(bookings, firstName+" "+lastName) // Inserindo em nosso slice
+
+	// Create a map for a user
+	// Slice example: var slice[]string
+	// map example: var map[string]string
+	var userData = make(map[string]string) // Nós não podemos mesclar tipos de dados no map usando GO
+	userData["firstName"] = firstName
+	userData["lastName"] = lastName
+	userData["email"] = email
+	userData["númeroDeTickets"] = strconv.FormatUint(uint64(userTickets), 10)
+
+	bookings = append(bookings, userData) // Inserindo em nosso slice
 
 	// fmt.Printf("Slice completo: %v\n", bookings)
 	// fmt.Printf("Primeiro valor: %v\n", bookings[0])
@@ -143,6 +152,7 @@ func bookTicket(userTickets uint, firstName string, lastName string, email strin
 	// fmt.Printf("Tamanho do Slice: %v\n", len(bookings))
 
 	// Função scanf para pedir informações
+	fmt.Printf("Bookings list: %v", bookings)
 	fmt.Printf("\nObrigado %v %v por comprar %v tickets! Você irá receber a confirmação da compra no seguinte e-mail: %v \n", firstName, lastName, userTickets, email)
 	fmt.Printf("Número de tickets em estoque da %v após a compra: %v", conferenceName, remainingTickets)
 }

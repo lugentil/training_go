@@ -7,22 +7,27 @@ package main
 // 1 Programaa só pode ter 1 função "main" por que você só pode ter 1 ponto de entrada
 
 import (
+	"booking-app/helper"
 	"fmt"
 	"strings"
 )
 
-func main() {
-	conferenceName := "GO conference"
-	// var conferenceName = "GO conference"
-	// Constante não altera durante a execução do programa, sempre manterá o mesmo valor
-	const conferenceTickets int = 50
-	var remainingTickets uint = 50
-	// Exemplo de lista: var bookings = [50]string{}
-	// var bookings [50]string //outra maneira de declarar lista
-	// var bookings []string // Isto é um Slice, representa a mesma forma da lista porém de maneira dinâmica
-	bookings := []string{} // Criando com a sintaxe compacta
+// Package level variables
+var conferenceName = "GO conference"
 
-	greetUsers(conferenceName, conferenceTickets, remainingTickets)
+// var conferenceName = "GO conference"
+// Constante não altera durante a execução do programa, sempre manterá o mesmo valor
+const conferenceTickets int = 50
+
+var remainingTickets uint = 50
+
+// Exemplo de lista: var bookings = [50]string{}
+// var bookings [50]string //outra maneira de declarar lista
+// var bookings []string // Isto é um Slice, representa a mesma forma da lista porém de maneira dinâmica
+var bookings = []string{} // Criando com a sintaxe compacta
+
+func main() {
+	greetUsers()
 
 	// Podemos dar condições de execução ao nosso for
 	// Exemplo for remainingTickets > 00 && len(bookings) < 50 {}
@@ -32,14 +37,13 @@ func main() {
 
 		fmt.Printf("ConferenceTickets is %T, remainingTickets is %T, conferenceName is %T\n", conferenceTickets, remainingTickets, conferenceName)
 
-		isValidName, isValidEmail, isValidTicketNumber := validateUserInput(firstName, lastName, email, userTickets, remainingTickets)
-
-		bookTicket(remainingTickets, userTickets, bookings, firstName, lastName, email, conferenceName)
+		isValidName, isValidEmail, isValidTicketNumber := helper.ValidateUserInput(firstName, lastName, email, userTickets, remainingTickets)
 
 		if isValidEmail && isValidName && isValidTicketNumber {
-
+			bookTicket(userTickets, firstName, lastName, email)
 			// Assimilando uma variavel para receber o valor de saída da função getFirtsNames
-			firstNames := getFirstNames(bookings)
+			firstNames := getFirstNames()
+
 			fmt.Printf("\nO primeiro nome dos compradores: %v\n", firstNames)
 
 			noremainingTickets := remainingTickets == 0
@@ -85,14 +89,14 @@ func main() {
 
 // Para executar 1 arquivo, executar no terminal: go run <file name> -> Irá compilar e rodar o código
 
-func greetUsers(confName string, confTickets int, confTicketsRemaining uint) {
-	fmt.Printf("Bem vindo a %v!\n", confName)
-	fmt.Printf("Nós temos o total de %v tickets e %v estão disponíveis atualmente\n", confTickets, confTicketsRemaining)
+func greetUsers() {
+	fmt.Printf("Bem vindo a %v!\n", conferenceName)
+	fmt.Printf("Nós temos o total de %v tickets e %v estão disponíveis atualmente\n", conferenceTickets, remainingTickets)
 	fmt.Printf("Garanta seus tickets agora mesmo!\n")
 
 }
 
-func getFirstNames(bookings []string) []string { // Colocamos dentro dos colchetes os parametros de entrada e fora colocamos os parametros que serão retornados / de saida
+func getFirstNames() []string { // Colocamos dentro dos colchetes os parametros de entrada e fora colocamos os parametros que serão retornados / de saida
 	firstNames := []string{}
 	// Definindo for para iterar o slice Bookings, com a função range conseguimos o index e o valor de cada elemento
 	// Tanto para listas ou slices
@@ -101,18 +105,6 @@ func getFirstNames(bookings []string) []string { // Colocamos dentro dos colchet
 		firstNames = append(firstNames, names[0])
 	}
 	return firstNames
-}
-
-func validateUserInput(firstName string, lastName string, email string, userTickets uint, remainingTickets uint) (bool, bool, bool) {
-	isValidName := len(firstName) >= 2 && len(lastName) >= 2
-	isValidEmail := strings.Contains(email, "@") // Verifica se a string email possui o simbolo "@"
-	isValidTicketNumber := userTickets > 0 && userTickets <= remainingTickets
-	// isValidCity := city == "Singapore" || city == "London"
-	// isInvalidValidCity := city =! "Singapore" && city != "London"
-	// Uma maneira de negar uma afirmação, exemplo: !isValidCity
-
-	// Em GO podemos retornar multiplos parâmetros de uma função, diferente de outras linguagens de programação
-	return isValidName, isValidEmail, isValidTicketNumber
 }
 
 func getUserInput() (string, string, string, uint) {
@@ -136,7 +128,7 @@ func getUserInput() (string, string, string, uint) {
 	return firstName, lastName, email, userTickets
 }
 
-func bookTicket(remainingTickets uint, userTickets uint, bookings []string, firstName string, lastName string, email string, conferenceName string) {
+func bookTicket(userTickets uint, firstName string, lastName string, email string) {
 
 	remainingTickets = remainingTickets - userTickets
 
@@ -152,5 +144,5 @@ func bookTicket(remainingTickets uint, userTickets uint, bookings []string, firs
 
 	// Função scanf para pedir informações
 	fmt.Printf("\nObrigado %v %v por comprar %v tickets! Você irá receber a confirmação da compra no seguinte e-mail: %v \n", firstName, lastName, userTickets, email)
-	fmt.Printf("Número de tickets em estoque após a compra: %v", remainingTickets)
+	fmt.Printf("Número de tickets em estoque da %v após a compra: %v", conferenceName, remainingTickets)
 }

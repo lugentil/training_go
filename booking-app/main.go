@@ -9,7 +9,6 @@ package main
 import (
 	"booking-app/helper"
 	"fmt"
-	"strconv"
 )
 
 // Package level variables
@@ -24,7 +23,17 @@ var remainingTickets uint = 50
 // Exemplo de lista: var bookings = [50]string{}
 // var bookings [50]string //outra maneira de declarar lista
 // var bookings []string // Isto é um Slice, representa a mesma forma da lista porém de maneira dinâmica
-var bookings = make([]map[string]string, 0) // Criando com a sintaxe compacta
+// var bookings = make([]map[string]string, 0) // Criando com a sintaxe compacta
+var bookings = make([]UserData, 0) // Criando com a sintaxe compacta
+
+// Ao definir o type, estamos criando dados do tipo userData
+// Mixed data type. E defini a estrutura do que os dados do usuário seria
+type UserData struct {
+	firstName       string
+	lastName        string
+	email           string
+	numberOfTickets uint
+}
 
 func main() {
 	greetUsers()
@@ -101,7 +110,8 @@ func getFirstNames() []string { // Colocamos dentro dos colchetes os parametros 
 	// Definindo for para iterar o slice Bookings, com a função range conseguimos o index e o valor de cada elemento
 	// Tanto para listas ou slices
 	for _, booking := range bookings {
-		firstNames = append(firstNames, booking["firstName"])
+		// firstNames = append(firstNames, booking["firstName"]) -> adicionando dados em um MAP
+		firstNames = append(firstNames, booking.firstName)
 	}
 	return firstNames
 }
@@ -138,11 +148,19 @@ func bookTicket(userTickets uint, firstName string, lastName string, email strin
 	// Create a map for a user
 	// Slice example: var slice[]string
 	// map example: var map[string]string
-	var userData = make(map[string]string) // Nós não podemos mesclar tipos de dados no map usando GO
-	userData["firstName"] = firstName
-	userData["lastName"] = lastName
-	userData["email"] = email
-	userData["númeroDeTickets"] = strconv.FormatUint(uint64(userTickets), 10)
+
+	var userData = UserData{
+		firstName:       firstName,
+		lastName:        lastName,
+		email:           email,
+		numberOfTickets: userTickets,
+	}
+
+	// var userData = make(map[string]string) // Nós não podemos mesclar tipos de dados no map usando GO
+	// userData["firstName"] = firstName
+	// userData["lastName"] = lastName
+	// userData["email"] = email
+	// userData["númeroDeTickets"] = strconv.FormatUint(uint64(userTickets), 10)
 
 	bookings = append(bookings, userData) // Inserindo em nosso slice
 

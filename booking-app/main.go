@@ -50,6 +50,8 @@ func main() {
 
 		if isValidEmail && isValidName && isValidTicketNumber {
 			bookTicket(userTickets, firstName, lastName, email)
+			sendTicket(userTickets, firstName, lastName, email)
+
 			// Assimilando uma variavel para receber o valor de saída da função getFirtsNames
 			firstNames := getFirstNames()
 
@@ -173,4 +175,13 @@ func bookTicket(userTickets uint, firstName string, lastName string, email strin
 	fmt.Printf("Bookings list: %v", bookings)
 	fmt.Printf("\nObrigado %v %v por comprar %v tickets! Você irá receber a confirmação da compra no seguinte e-mail: %v \n", firstName, lastName, userTickets, email)
 	fmt.Printf("Número de tickets em estoque da %v após a compra: %v", conferenceName, remainingTickets)
+}
+
+func sendTicket(userTickets uint, firstName string, lastName string, email string) {
+
+	var ticket = fmt.Sprintf("%v tickets for %v %v", userTickets, firstName, lastName)
+	//Sprintf permite salvar o print diretamente em uma variavel
+	fmt.Println("############")
+	fmt.Printf("Sending ticket: \n%v \nto email address: %v\n", ticket, email)
+	fmt.Println("############")
 }

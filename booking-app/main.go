@@ -9,6 +9,8 @@ package main
 import (
 	"booking-app/helper"
 	"fmt"
+	"sync"
+	"time"
 )
 
 // Package level variables
@@ -28,6 +30,9 @@ var bookings = make([]UserData, 0) // Criando com a sintaxe compacta
 
 // Ao definir o type, estamos criando dados do tipo userData
 // Mixed data type. E defini a estrutura do que os dados do usuário seria
+
+var wg = sync.WaitGroup{}
+
 type UserData struct {
 	firstName       string
 	lastName        string
@@ -50,7 +55,9 @@ func main() {
 
 		if isValidEmail && isValidName && isValidTicketNumber {
 			bookTicket(userTickets, firstName, lastName, email)
-			sendTicket(userTickets, firstName, lastName, email)
+
+			wg.Add(1)                                              // Este valor é 1, pois estamos apenas com 1 função em paralelo, em caso de 2 funções com a palvra go, colocaremos o valor 2 para esta variavel.
+			go sendTicket(userTickets, firstName, lastName, email) // Para aplicar paralelismo, basta colocar a palavra go na frente da chamada da função.
 
 			// Assimilando uma variavel para receber o valor de saída da função getFirtsNames
 			firstNames := getFirstNames()
@@ -94,8 +101,8 @@ func main() {
 			fmt.Printf("O valor informado não está correto, por favor insira novamente.")
 			continue
 		}
-
 	}
+	wg.Wait()
 }
 
 // Para executar 1 arquivo, executar no terminal: go run <file name> -> Irá compilar e rodar o código
@@ -174,14 +181,27 @@ func bookTicket(userTickets uint, firstName string, lastName string, email strin
 	// Função scanf para pedir informações
 	fmt.Printf("Bookings list: %v", bookings)
 	fmt.Printf("\nObrigado %v %v por comprar %v tickets! Você irá receber a confirmação da compra no seguinte e-mail: %v \n", firstName, lastName, userTickets, email)
-	fmt.Printf("Número de tickets em estoque da %v após a compra: %v", conferenceName, remainingTickets)
+	fmt.Printf("Número de tickets em estoque da %v após a compra: %v\n", conferenceName, remainingTickets)
 }
 
 func sendTicket(userTickets uint, firstName string, lastName string, email string) {
+	// Função para aplicar paralelismo
+	// GO utiliza o que é chamado de Green Thread
+	// Em GO utilizamos GOroutine, que é uma abstração do conceito de threads
+	// Gerenciado pelo GO runtime, ele se comunicam apenas em um nivel alto de GOroutines
+	// Com isso ele fica mais leve e mais barato
+	// Podendo rodar diversas GO Routines sem afetar a performance das máquinas
 
+	// Sincronizando -> Utilizamos um package chamado sync que integra a funcionalidade de sincronizar o paralelismo
+	// Precisamos montar a sincronização utilizando 3 funções deste pacote
+	// Add, Wait e Done. Add -> Define o número de GORoutines para esperar e também gera um contador
+	// Função Wait -> Funçao que espera o WaitGroup counter chegar a 0
+	// Função Done-> Decrementa o contador em 1, então é chamado pelo GoRoutine para saber quando acabou o processamento.
+	time.Sleep(10 * time.Second)
 	var ticket = fmt.Sprintf("%v tickets for %v %v", userTickets, firstName, lastName)
 	//Sprintf permite salvar o print diretamente em uma variavel
 	fmt.Println("############")
 	fmt.Printf("Sending ticket: \n%v \nto email address: %v\n", ticket, email)
 	fmt.Println("############")
+	wg.Done()
 }
